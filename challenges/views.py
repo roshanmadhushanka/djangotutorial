@@ -1,22 +1,35 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpRequest, HttpResponseNotFound, HttpResponseBadRequest
 
-# Create your views here.
+MONTHLY_CHALLENGES = {
+    'january': 'Eat no meat for the entire month',
+    'february': 'Walt for at least 20 minutes every dat',
+    'march': 'Learn a new programming language',
+    'april': 'Service your car',
+    'may': 'Swimming challenge with your friends',
+    'june': 'BBQ day out challenge',
+    'july': 'Win a game',
+    'august': 'Fitness challenge',
+    'september': 'Read two books',
+    'october': 'Learn something new',
+    'november': 'Help someone',
+    'december': 'Christmas decoration'
+}
 
 
 def monthly_challenge(request: HttpRequest, month: str) -> HttpResponse:
-    _monthly_challenge = None
-    if month == 'january':
-        _monthly_challenge = 'Complete 2 coding projects'
-    elif month == 'february':
-        _monthly_challenge = 'Learn a programming language'
-    elif month == 'march':
-        _monthly_challenge = 'Workout month'
-    else:
-        return HttpResponseNotFound()
-    return HttpResponse("Weekly challenge : {}".format(_monthly_challenge))
+    if not month:
+        return HttpResponseBadRequest('Month not defined')
+
+    if month.lower() in MONTHLY_CHALLENGES:
+        return HttpResponse('Monthly challenge for {} is : {}'.format(month, MONTHLY_CHALLENGES[month.lower()]))
+
+    return HttpResponseNotFound()
 
 
 def monthly_challenges_by_index(request: HttpRequest, index: int) -> HttpResponse:
-    return HttpResponse('Month index is : {}'.format(index))
+    if 1 <= index <= 12:
+        return monthly_challenge(request, list(MONTHLY_CHALLENGES.keys())[index - 1])
+    else:
+        return HttpResponseBadRequest('Invalid month index range')
 
