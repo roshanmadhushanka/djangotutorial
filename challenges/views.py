@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseNotFound, HttpResponseBadRequest
+from django.http import HttpResponse, HttpRequest, HttpResponseNotFound, HttpResponseBadRequest, HttpResponseRedirect
 
 MONTHLY_CHALLENGES = {
     'january': 'Eat no meat for the entire month',
@@ -23,13 +23,13 @@ def monthly_challenge(request: HttpRequest, month: str) -> HttpResponse:
 
     if month.lower() in MONTHLY_CHALLENGES:
         return HttpResponse('Monthly challenge for {} is : {}'.format(month, MONTHLY_CHALLENGES[month.lower()]))
-
     return HttpResponseNotFound()
 
 
 def monthly_challenges_by_index(request: HttpRequest, index: int) -> HttpResponse:
     if 1 <= index <= 12:
-        return monthly_challenge(request, list(MONTHLY_CHALLENGES.keys())[index - 1])
+        # return monthly_challenge(request, list(MONTHLY_CHALLENGES.keys())[index - 1])
+        return HttpResponseRedirect('/challenges/{}'.format(list(MONTHLY_CHALLENGES.keys())[index - 1]))
     else:
         return HttpResponseBadRequest('Invalid month index range')
 
